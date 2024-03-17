@@ -1,0 +1,55 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseUtil {
+    private static final String URL = "jdbc:mysql://localhost:3306/your_database_name";
+    private static final String USERNAME = "your_username";
+    private static final String PASSWORD = "your_password";
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+    }
+}
+<%@ page import="java.sql.*" %>
+<%@ page import="DatabaseUtil" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User Data</title>
+</head>
+<body>
+    <h1>User Data</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+        <%
+            try {
+                Connection conn = DatabaseUtil.getConnection();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+
+                while (rs.next()) {
+        %>
+                    <tr>
+                        <td><%= rs.getInt("id") %></td>
+                        <td><%= rs.getString("name") %></td>
+                        <td><%= rs.getString("email") %></td>
+                    </tr>
+        <%
+                }
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        %>
+    </table>
+</body>
+</html>
